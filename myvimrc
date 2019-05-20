@@ -1,0 +1,372 @@
+"==================plugin setting=================
+"let g:tmux_navigator_no_mappings = 1
+"nnoremap <silent> <C-j> :TmuxNavigateLeft<cr>
+"nnoremap <silent> <C-k> :TmuxNavigateDown<cr>
+"nnoremap <silent> <C-i> :TmuxNavigateUp<cr>
+"nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+"=========================================
+
+"set autoindent ruler binary nobackup autowrite
+"map [11~ :help
+"map [12~ :w!
+"map [20~ :make
+"map [19~ 
+"map <F2> :w!
+"map <F9> :make
+map <F2> a<C-R>=strftime("%c")<CR><Esc>
+map <F5> i(<Esc>ea)<Esc>
+map <F6> i(<Esc>ea);<Esc>
+map <silent> <F8> :Tlist<CR>
+map \c i{<Esc>ea}<Esc>
+set backup
+set autowrite
+set bdir=~/.vimbackup
+set autoindent
+set smartindent
+set number
+set cindent
+set tw=90
+set showmatch
+set hls
+set incsearch
+"expandtab transform tab space into multiple spaces
+set expandtab
+set noeb
+set vb
+"set lines will make the show in telnet bad.
+"set lines=40
+set guifont=Serif16
+"set guifont = Consolas:h14:cANSI
+"set guifont=unifont
+"set guifont=Luxi\ Mono\ 12
+
+"allow scrollwheel
+"set mouse=a             " hold shift to copy xterm
+"set ttymouse=xterm2     " necessary for gnu screen & mouse
+
+"map ,n yA:!netscape -remote "openurl ""
+
+" Standard settings are: autoindent, wrap in column 72
+" autocmd BufEnter * set fo=tcq2l ai tw=72 nocin com&
+
+" cindent for C files
+" autocmd BufEnter *.c,*.C,*.h,*.H,*.java set fo=croql cin
+" autocmd BufEnter *.pl,*.cgi set fo=croql cin comments=n:#
+" Enable editing of gzipped files.  This comes straight from the vim
+" distribution and it served me well.
+"   uncompress them after reading
+"   compress them before writing, undone after writing
+"   binary mode is needed when writing gzipped files
+"autocmd BufRead *.gz set bin|%!gunzip
+"autocmd BufRead *.gz set nobin
+"autocmd BufWritePre *.gz %!gzip
+"autocmd BufWritePre *.gz set bin
+"autocmd BufWritePost *.gz undo|set nobin
+"autocmd FileReadPost *.gz set bin|'[,']!gunzip
+"autocmd FileReadPost set nobin
+
+let g:explVertical=0
+let g:explSplitBelow=1
+let g:explSplitRight=0
+let g:explStartBelow=1
+let g:explSortBy='name'
+
+highlight Normal guibg=Black guifg=Green
+set nocompatible
+set backspace=indent,eol,start
+set showcmd
+set incsearch
+set hlsearch
+set background=dark
+"c_space_error=1 makes empty line be shown in red
+let c_space_errors=1
+syntax on
+filetype indent plugin on   "python indent
+set syn=c
+set ruler
+set cindent
+set history=50
+set showmatch
+set showmode
+set tabstop=4
+set shiftwidth=4
+set nu
+set backspace=2
+:map ,, <C-p>
+set foldlevel=10    "turn off folding for certain level
+
+"function! LoadDevScripts()
+"    so $HOME/dev-scripts/Qt.vim
+"    so $HOME/dev-scripts/kde-devel-vim.vim
+"endfunction
+
+"au BufRead,BufNewFile */libhi*/*,*/vue/*,*/build/src/* call LoadDevScripts()
+
+"comment:auto jump to the line which is the line when exiting the file last time
+if has("autocmd")
+   autocmd BufRead *.txt set tw=78
+   autocmd BufReadPost *
+      \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+      \   exe "normal g'\"" |
+      \ endif
+endif
+
+"open folder option
+set foldmethod=syntax
+
+set autochdir "may not needed
+
+"auto add right parenthesis
+:inoremap ( ()<ESC>i
+:inoremap ) <c-r>=ClosePair(')')<CR>
+:inoremap { {}<ESC>i
+:inoremap } <c-r>=ClosePair('}')<CR>
+:inoremap [ []<ESC>i
+:inoremap ] <c-r>=ClosePair(']')<CR>
+":inoremap < <><ESC>i
+":inoremap > <c-r>=ClosePair('>')<CR>
+function ClosePair(char)
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        return a:char
+    endif
+endfun
+
+"smart home/end, not work in putty!
+"map <silent> <Home> :SmartHomeKey <CR>
+" if at first word, move to beginning of line
+" if at beginning of line, move to beginning of window
+" if at beginning of window, move to beginning of file
+nnoremap <silent> <Home> :call SmartHome("n")<CR>
+inoremap <silent> <Home> <C-O>:call SmartHome("i")<CR>
+vnoremap <silent> <Home> <Esc>:call SmartHome("v")<CR>
+function! SmartHome(mode)
+  if col('.') == 1
+    if line('.') == 1
+      return
+    elseif winline() == &scrolloff+1
+      normal! m`gg
+    else
+      normal! m`H0
+    endif
+  elseif strpart(getline('.'), -1, col('.')) =~ '^\s\+$'
+    normal! 0
+  else
+    normal! ^
+  endif
+  if a:mode == "v"
+    normal! msgv`s
+  endif
+endfun
+
+" map <End> to move to end of line
+" if at end of line, move to end of window
+" if at end of window, move to end of file
+nnoremap <silent> <End> :call SmartEnd("n")<CR>
+inoremap <silent> <End> <C-O>:call SmartEnd("i")<CR>
+vnoremap <silent> <End> <Esc>:call SmartEnd("v")<CR>
+function! SmartEnd(mode)
+  if col('.') < col('$')-1
+    normal! $
+  elseif winline() < winheight(0) - &scrolloff
+    normal! m`L$
+  else
+    normal! m`G$
+  endif
+  if a:mode == "v"
+    normal! msgv`s
+  endif
+endfun
+
+" automatically open file where last modified
+if has("autocmd")
+  autocmd BufRead *.txt set tw=78
+  autocmd BufReadPost *
+  \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+  \   exe "normal g'\"" |
+  \ endif
+endif
+
+" below from tsai
+"-------------------------------------------------------
+"easy switching between splitted windows
+"type Ctrl-left to go to a window below
+"type Ctrl-right to go to a window above
+map <C-j> <C-W><left>
+map <C-l> <C-W><right>
+map <C-i> <C-W><up>
+map <C-k> <C-W><down>
+"------------------------------------------------------
+"copy content between vim sessions
+ab Wa w! ~/tmp/gao.tmp.a
+ab Ra r  ~/tmp/gao.tmp.a
+ab Wb w! ~/tmp/gao.tmp.b
+ab Rb r  ~/tmp/gao.tmp.b
+"------------------------------------------------------
+" This is to fill up // in front of C++ code (C^) at command
+" line mode, and to remove  the comments (rC^). The usage is
+" like to do the command line replacement:
+" :12,15 C^
+" stands for 12,15 s/^/\/\//
+"------------------------------------------------------
+autocmd  BufRead *c,*,*cpp,*cxx    cabbrev C^ s/^/\/\//<CR>:noh<CR>
+autocmd  BufRead *c,*,*cpp,*cxx    cabbrev rC^ s/^\/\///<CR>:noh<CR>
+autocmd  BufRead *c,*,*cpp,*cxx    vmap ^  :s/^/\/\//<CR>:noh<CR>
+autocmd  BufRead *c,*,*cpp,*cxx    vmap r^ :s/^\/\///<CR>:noh<CR>
+"------------------------------------------------------
+autocmd  BufRead *m    cabbrev C^ s/^/%/<CR>:noh<CR>
+autocmd  BufRead *m    cabbrev rC^ s/^%//<CR>:noh<CR>
+autocmd  BufRead *m    vmap ^  :s/^/%/<CR>:noh<CR>
+autocmd  BufRead *m    vmap r^ :s/^%//<CR>:noh<CR>
+"------------------------------------------------------
+autocmd  BufRead *.py             cabbrev C^ s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.py             cabbrev rC^ s/^#//<CR>:noh<CR>
+autocmd  BufRead *.py             vmap ^  :s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.py             vmap r^ :s/^#//<CR>:noh<CR>
+"------------------------------------------------------
+autocmd  BufRead *.tcl             cabbrev C^ s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.tcl             cabbrev rC^ s/^#//<CR>:noh<CR>
+autocmd  BufRead *.tcl             vmap ^  :s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.tcl             vmap r^ :s/^#//<CR>:noh<CR>
+"------------------------------------------------------
+autocmd  BufRead *.tex             cabbrev C^ s/^/%/<CR>:noh<CR>
+autocmd  BufRead *.tex             cabbrev rC^ s/^%//<CR>:noh<CR>
+"autocmd  BufRead *.tex             cabbrev in~ s/\(\d\)\(\a\)/\1\~\2/
+autocmd  BufRead *.tex             cabbrev d~ g!/\w/d<CR>:noh<CR>
+"autocmd  BufRead *.tex             vmap in~  :s/\(\d\)\(\a\)/\1\~\2/
+autocmd  BufRead *.tex             map in~  {v}:s/\(\d\)\(\a\)/\1\~\2/<CR>{v}!/usr/users/home4/ctsai1/bin/par -jw80<CR>
+autocmd  BufRead *.tex             vmap d~   :g!/\w/d<CR>:noh<CR>
+autocmd  BufRead *.tex             vmap ^  :s/^/%/<CR>:noh<CR>
+autocmd  BufRead *.tex             vmap r^ :s/^%//<CR>:noh<CR>
+"------------------------------------------------------
+autocmd  BufRead *.conf             cabbrev C^ s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.conf             cabbrev rC^ s/^#//<CR>:noh<CR>
+autocmd  BufRead *.conf             vmap ^  :s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.conf             vmap r^ :s/^#//<CR>:noh<CR>
+"------------------------------------------------------
+autocmd  BufRead *.g             cabbrev C^ s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.g             cabbrev rC^ s/^#//<CR>:noh<CR>
+autocmd  BufRead *.g             vmap ^  :s/^/#/<CR>:noh<CR>
+autocmd  BufRead *.g             vmap r^ :s/^#//<CR>:noh<CR>
+
+"===========================================================
+" This is to key in the comment block in c++
+autocmd  BufRead *c,*,*cpp,*cxx    nmap _c o//------------------------------------------------------<CR>------------------------------------------------------<Esc>ko
+autocmd  BufRead *.pm,*.pl,*.plt,*tcl,*expect,*txt,*howto,*log   nmap _c o#------------------------------------------------------<CR>#------------------------------------------------------<Esc>ko# 
+autocmd  BufRead *.cir             nmap _c o*------------------------------------------------------<CR>*------------------------------------------------------<Esc>ko*
+autocmd  BufRead *.tex             nmap _c o%------------------------------------------------------<CR>%------------------------------------------------------<Esc>ko%
+
+autocmd  BufRead *.bib             set  ft=bst
+
+"===========================================================
+"   so I type _if, and then start typing the error message I
+"want.  adding __FILE__  and __LINE__  is invaluable  when I
+"come to remove the debugging I have scattered across half a
+"dozen files. the  0<C-d> is so that  these debug statements
+"arent  indented,  which  makes  them  easier  to  pick  out
+"visually and to remove.
+autocmd  BufRead *,*cpp,*cxx    nmap _if ocout<< 0<C-d>"### {" << __FILE__ << "}-{" << __LINE__ << "}, " << endl;<Esc>F"i
+autocmd  BufRead *pl,*pm        nmap _if oprint "### {"; print  __FILE__ ; print  "}-{" ; print __LINE__ ; print "}, "."\n";
+autocmd  BufRead *pl,*pm        nmap _id o eval {return sprintf "{%s}-{%s}", __FILE__, __LINE__;}<Esc>BBba
+"autocmd  BufRead *pl            nmap _id o $sring2debug=sprintf "{%s}-{%s}", __FILE__, __LINE__;<Esc>BBba
+autocmd  BufRead *.c            nmap _if ofprintf(0<C-d>stderr, "### {%s} {%d} - \n", __FILE__, __LINE__);<Esc>F\i
+"nmap _if ofprintf(0<C-d>stderr, "{%s} {%d} - \n", __FILE__, __LINE__);<Esc>F\i
+
+"=============ctag setting=============
+"search tag in current director first and up if not found
+set tags=./tags,tags;
+
+map  g 
+
+"use ctrl+p to open new tag in a vertical window
+"map <C-\> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+map <C-p> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+
+"generate tags in a particular project's root
+"map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+
+"============Let vim automatically set screen title===========
+let &titlestring = expand("%:t")
+if &term == "screen"
+  set t_ts=k
+  set t_fs=\
+  auto VimLeave * :set t_ts=k\
+endif
+if &term == "screen" || &term == "xterm"
+  set title
+endif
+
+"ignore boost in auto completion
+set include=^\\s*#\\s*include\ \\(<boost/\\)\\@!
+
+"search case-insensitive when typing lowercase
+set ignorecase
+set smartcase
+
+"============ scroll bind =============
+nnoremap <silent> <Leader>scb :set scb!<CR>
+
+"============ Diff On, Diff Off =============
+" Set up a keymapping from <Leader>df to a function call.
+" (Note the function doesn't need to be defined beforehand.)
+" Run this mapping silently. That is, when I call this mapping,
+" don't bother showing "call DiffToggle()" on the command line.
+nnoremap <silent> <Leader>df :call DiffToggle()<CR>
+
+" Define a function called DiffToggle.
+" The ! overwrites any existing definition by this name.
+function! DiffToggle()
+    " Test the setting 'diff', to see if it's on or off.
+    " (Any :set option can be tested with &name.
+    " See :help expr-option.)
+    if &diff
+        diffoff
+    else
+        diffthis
+    endif
+:endfunction
+
+"============ customized setting =============
+"apply setting by 'call VimUseCcopt()'
+function VimUseCCopt()
+    set tabstop=2
+    set shiftwidth=2
+endfun
+
+"vimdiff to ignore white space
+"set diffopt+=iwhite
+
+"change color scheme for vimdiff
+set t_Co=256
+if &diff
+    "highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+    "highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+    "highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+    "highlight DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+    hi DiffAdd                      ctermbg=17                                      guibg=#2a0d6a
+    hi DiffDelete   ctermfg=234     ctermbg=60      cterm=none      guifg=#242424   guibg=#3e3969   gui=none
+    hi DiffText                     ctermbg=53      cterm=none                      guibg=#73186e   gui=none
+    hi DiffChange                   ctermbg=237                                     guibg=#382a37
+endif
+
+"Faster loading of large files (vim tip 343)
+:let g:LargeFile=10
+" Protect large files from sourcing and other overhead.
+" Files become read only
+if !exists("my_auto_commands_loaded")
+  let my_auto_commands_loaded = 1
+  " Large files are > 10M
+  " Set options:
+  " eventignore+=FileType (no syntax highlighting etc
+  " assumes FileType always on)
+  " noswapfile (save copy of file)
+  " bufhidden=unload (save memory when other file is viewed)
+  " buftype=nowrite (file is read-only)
+  " undolevels=-1 (no undo possible)
+  let g:LargeFile = 1024 * 1024 * 10
+  augroup LargeFile
+    autocmd BufReadPre * let f=expand("<afile>") | if getfsize(f) > g:LargeFile | set eventignore+=FileType | setlocal noswapfile bufhidden=unload buftype=nowrite undolevels=-1 | else | set eventignore-=FileType | endif
+    augroup END
+  endif
+
